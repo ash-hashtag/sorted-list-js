@@ -1,16 +1,24 @@
 {
   "name": "sorted-array",
   "version": "1.0.0",
-  "description": "",
+  "description": "A TypeScript implementation of a sorted array with efficient insertion and search",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ash-hashtag/sorted-list-js.git"
+  },
+  "homepage": "https://github.com/ash-hashtag/sorted-list-js#readme",
+  "bugs": {
+    "url": "https://github.com/ash-hashtag/sorted-list-js/issues"
+  },
   "scripts": {
     "build": "tsc",
     "test": "node test.js",
     "prepublishOnly": "npm run build"
   },
-  "keywords": [],
+  "keywords": ["sorted", "array", "data-structure", "typescript"],
   "author": "",
   "license": "MIT",
   "packageManager": "pnpm@10.28.0",
