@@ -19,10 +19,7 @@ export class SortedArray<T> {
   }
 
   static fromArray<T>(arr: T[], compareFn: CompareFn<T>) {
-    return SortedArray.fromArraySorted(
-      arr.sort(compareFn),
-      compareFn,
-    );
+    return SortedArray.fromArraySorted(arr.sort(compareFn), compareFn);
   }
 
   push(...elements: T[]) {
@@ -87,8 +84,25 @@ export class SortedArray<T> {
   }
 
   private findIndexFor(value: T): Result<number, number> {
-    if (this.inner.length < 8) {
-      for (let i = 0; i < this.inner.length; i++) {
+    if (this.inner.length == 0) {
+      return { ok: false, error: 0 };
+    }
+
+    const length = this.inner.length;
+
+    {
+      // very common use case is to add at last of the array, hence
+      const lastIndex = length - 1;
+      const result = this.compareFn(this.inner[lastIndex], value);
+
+      if (result == 0) {
+        return { ok: true, value: lastIndex };
+      } else if (result < 0) {
+        return { ok: false, error: lastIndex + 1 };
+      }
+    }
+    if (length < 8) {
+      for (let i = 0; i < length; i++) {
         const result = this.compareFn(this.inner[i], value);
         if (result == 0) {
           return { ok: true, value: i };
@@ -96,7 +110,7 @@ export class SortedArray<T> {
           return { ok: false, error: i };
         }
       }
-      return { ok: false, error: this.inner.length };
+      return { ok: false, error: length };
     } else {
       return binarySearchResult(this.inner, value, this.compareFn);
     }
