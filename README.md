@@ -1,12 +1,7 @@
-# ash-sorted-array
+# sorted-array
 
 A TypeScript implementation of a sorted array with efficient insertion and search using binary search for larger arrays.
 
-## Installation
-
-```bash
-npm install ash-sorted-array
-```
 
 ## Features
 
@@ -20,7 +15,7 @@ npm install ash-sorted-array
 ## Usage
 
 ```typescript
-import { SortedArray } from 'ash-sorted-array';
+import { SortedArray } from 'sorted-array';
 
 // Create with a comparator function
 const arr = new SortedArray<number>((a, b) => a - b);
