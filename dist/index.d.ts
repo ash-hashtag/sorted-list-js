@@ -6,21 +6,17 @@ export type Result<T, E> = {
     error: E;
 };
 export type CompareFn<T> = (a: T, b: T) => number;
-export declare class SortedArray<T> {
-    private inner;
+export declare class SortedArray<T> extends Array<T> {
     private compareFn;
     constructor(compareFn: CompareFn<T>);
     private static fromArraySorted;
     static fromArray<T>(arr: T[], compareFn: CompareFn<T>): SortedArray<T>;
-    push(...elements: T[]): void;
-    pop(): void;
+    push(...elements: T[]): number;
+    pop(): T | undefined;
     clear(): void;
     insert(value: T): boolean;
     deleteAt(idx: number): T | undefined;
     delete(value: T): T | undefined;
     upsert(value: T): boolean;
-    get length(): number;
-    get(index: number): T | undefined;
     private findIndexFor;
-    [Symbol.iterator](): Generator<T, void, unknown>;
 }

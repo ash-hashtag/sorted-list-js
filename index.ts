@@ -2,18 +2,17 @@ export type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
 
 export type CompareFn<T> = (a: T, b: T) => number;
 
-export class SortedArray<T> {
-  private inner: T[];
+export class SortedArray<T> extends Array<T> {
   private compareFn: CompareFn<T>;
 
   constructor(compareFn: CompareFn<T>) {
-    this.inner = [];
+    super();
     this.compareFn = compareFn;
   }
 
   private static fromArraySorted<T>(arr: T[], compareFn: CompareFn<T>) {
     const s = new SortedArray(compareFn);
-    s.inner = arr;
+    s.push(...arr);
 
     return s;
   }
@@ -22,37 +21,31 @@ export class SortedArray<T> {
     return SortedArray.fromArraySorted(arr.sort(compareFn), compareFn);
   }
 
-  push(...elements: T[]) {
+  override push(...elements: T[]) {
     for (const el of elements) {
       this.insert(el);
     }
+    return this.length;
   }
 
-  pop() {
-    this.inner.pop();
+  override pop() {
+    return super.pop();
   }
 
   clear() {
-    this.inner.length = 0;
+    this.length = 0;
   }
 
   insert(value: T): boolean {
     const idx = this.findIndexFor(value);
-
-    if (idx.ok) {
-      this.inner.splice(idx.value, 0, value);
-      return true;
-    } else {
-      this.inner.splice(idx.error, 0, value);
-      return true;
-    }
+    super.splice(idx.ok ? idx.value : idx.error, 0, value);
+    return true;
   }
 
   deleteAt(idx: number): T | undefined {
-    if (idx < this.inner.length) {
-      return this.inner.splice(idx, 1)[0];
+    if (idx < this.length) {
+      return super.splice(idx, 1)[0];
     }
-
     return undefined;
   }
 
@@ -67,33 +60,25 @@ export class SortedArray<T> {
   upsert(value: T): boolean {
     const idx = this.findIndexFor(value);
     if (idx.ok) {
-      this.inner[idx.value] = value;
+      this[idx.value] = value;
       return false;
     } else {
-      this.inner.splice(idx.error, 0, value);
+      super.splice(idx.error, 0, value);
       return true;
     }
   }
 
-  get length() {
-    return this.inner.length;
-  }
-
-  get(index: number): T | undefined {
-    return this.inner[index];
-  }
-
   private findIndexFor(value: T): Result<number, number> {
-    if (this.inner.length == 0) {
+    if (this.length == 0) {
       return { ok: false, error: 0 };
     }
 
-    const length = this.inner.length;
+    const length = this.length;
 
     {
       // very common use case is to add at last of the array, hence
       const lastIndex = length - 1;
-      const result = this.compareFn(this.inner[lastIndex], value);
+      const result = this.compareFn(this[lastIndex], value);
 
       if (result == 0) {
         return { ok: true, value: lastIndex };
@@ -103,7 +88,7 @@ export class SortedArray<T> {
     }
     if (length < 8) {
       for (let i = 0; i < length; i++) {
-        const result = this.compareFn(this.inner[i], value);
+        const result = this.compareFn(this[i], value);
         if (result == 0) {
           return { ok: true, value: i };
         } else if (result > 0) {
@@ -112,12 +97,8 @@ export class SortedArray<T> {
       }
       return { ok: false, error: length };
     } else {
-      return binarySearchResult(this.inner, value, this.compareFn);
+      return binarySearchResult(this, value, this.compareFn);
     }
-  }
-
-  *[Symbol.iterator]() {
-    yield* this.inner;
   }
 }
 
