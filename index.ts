@@ -100,12 +100,22 @@ export class SortedArray<T> extends Array<T> {
       return binarySearchResult(this, value, this.compareFn);
     }
   }
+
+  first(): T | undefined {
+    if (this.length > 0)
+      return this[0];
+  }
+
+  last(): T | undefined {
+    if (this.length > 0)
+      return this[this.length - 1];
+  }
 }
 
 function binarySearchResult<T>(
   arr: readonly T[],
   target: T,
-  cmp: (a: T, b: T) => number,
+  cmp: CompareFn<T>,
 ): Result<number, number> {
   let lo = 0;
   let hi = arr.length;
@@ -126,71 +136,122 @@ function binarySearchResult<T>(
   return { ok: false, error: lo }; // not found → insert position
 }
 
+function invertCompareFn<T>(c: CompareFn<T>): CompareFn<T> {
+  return (a, b) => -c(a, b)
+}
+
+
 
 
 export class DoubleSortedArray<T> {
-  private left: T[] = [];
-  private right: T[] = [];
+  private left: SortedArray<T>; // stored in reverse order
+  private right: SortedArray<T>;
   private compareFn: CompareFn<T>;
 
   constructor(compareFn: CompareFn<T>) {
     this.compareFn = compareFn;
+    this.left = new SortedArray(invertCompareFn(compareFn));
+    this.right = new SortedArray(compareFn);
   }
 
   get length(): number {
     return this.left.length + this.right.length;
   }
 
-  insert(value: T): void {
-    if (this.length === 0) {
-      this.right.push(value);
-      return;
-    }
+  // upsert(value: T): boolean {
+  //   if (this.length === 0) {
+  //     return this.right.upsert(value);
+  //   }
 
-    const leftLast = this.left[this.left.length - 1];
-    const rightFirst = this.right[0];
-
-    if (this.left.length === 0 || this.compareFn(value, rightFirst) >= 0) {
-      const idx = this.findInsertIndex(this.right, value);
-      this.right.splice(idx, 0, value);
-    } else if (this.right.length === 0 || this.compareFn(value, leftLast) <= 0) {
-      const idx = this.findInsertIndex(this.left, value);
-      this.left.splice(idx, 0, value);
-    } else {
-      const distToLeft = this.left.length - this.findInsertIndex(this.left, value);
-      const distToRight = this.findInsertIndex(this.right, value);
+  //   if (this.left.length == 0) {
+  //     const rightFirst = this.right.first()!;
+  //     if (this.compareFn(value, rightFirst) <= 0) {
+  //       return this.left.upsert(value);
+  //     } else {
+  //       return this.right.upsert(value);
+  //     }
       
-      if (distToLeft <= distToRight) {
-        const idx = this.findInsertIndex(this.left, value);
-        this.left.splice(idx, 0, value);
-      } else {
-        const idx = this.findInsertIndex(this.right, value);
-        this.right.splice(idx, 0, value);
-      }
-    }
-  }
+  //   }
 
-  private findInsertIndex(arr: T[], value: T): number {
-    let lo = 0, hi = arr.length;
-    while (lo < hi) {
-      const mid = (lo + hi) >> 1;
-      if (this.compareFn(arr[mid], value) < 0) lo = mid + 1;
-      else hi = mid;
+  //   const leftLast = this.left.last()!; // least element
+
+  //   if (this.compareFn(value, leftLast) <= 0) {
+  //     return this.left.upsert(value);
+  //   }
+
+  //   const leftFirst = this.left.first()!;
+
+  //   if (this.compareFn(value, leftFirst) <= 0) {
+  //     return this.left.upsert(value);
+  //   } else {
+  //     return this.right.upsert(value);
+  //   }
+  // }
+
+
+  insert(value: T): boolean {
+    if (this.length === 0) {
+      return this.right.insert(value);
     }
-    return lo;
+
+    if (this.left.length == 0) {
+      const rightFirst = this.right.first()!;
+      if (this.compareFn(value, rightFirst) <= 0) {
+        return this.left.insert(value);
+      } else {
+        return this.right.insert(value);
+      }
+      
+    }
+
+    const leftLast = this.left.last()!; // least element
+
+    if (this.compareFn(value, leftLast) <= 0) {
+      return this.left.insert(value);
+    }
+
+    const leftFirst = this.left.first()!;
+
+    if (this.compareFn(value, leftFirst) <= 0) {
+      return this.left.insert(value);
+    } else {
+      return this.right.insert(value);
+    }
   }
+  
+
 
   at(index: number): T | undefined {
     if (index < 0 || index >= this.length) return undefined;
-    return index < this.left.length ? this.left[index] : this.right[index - this.left.length];
+    return index < this.left.length ? this.left[this.left.length - 1 - index] : this.right[index - this.left.length];
   }
 
   *[Symbol.iterator](): Iterator<T> {
-    yield* this.left;
+    for (let i = this.left.length - 1; i >= 0; i--) yield this.left[i];
     yield* this.right;
   }
 
+
+  clear() {
+    this.left.clear();
+    this.right.clear();
+  }
+
+  delete(value: T) {
+    this.left.delete(value) || this.right.delete(value);
+  }
+
+  deleteAt(index: number): T | undefined {
+    if (index < 0 || index >= this.length) return undefined;
+
+    if (index < this.left.length) {
+      return this.left.deleteAt(this.left.length - 1 - index);
+    } else {
+      return this.right.deleteAt(index - this.left.length);
+    }
+  }
+
   toArray(): T[] {
-    return [...this.left, ...this.right];
+    return [...this];
   }
 }

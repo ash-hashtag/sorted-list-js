@@ -110,52 +110,37 @@ test('DoubleSortedArray: length', () => {
   assert.equal(arr.length, 3);
 });
 
-// Benchmarks
-test('Benchmark: sequential insertions', () => {
-  const size = 1000;
-  
-  const dsa = new DoubleSortedArray<number>(numCmp);
-  const dsaStart = performance.now();
-  for (let i = 0; i < size; i++) dsa.insert(i);
-  const dsaTime = performance.now() - dsaStart;
-  
-  const sa = new SortedArray<number>(numCmp);
-  const saStart = performance.now();
-  for (let i = 0; i < size; i++) sa.insert(i);
-  const saTime = performance.now() - saStart;
-  
-  console.log(`Sequential (${size}): DoubleSortedArray ${dsaTime.toFixed(2)}ms, SortedArray ${saTime.toFixed(2)}ms`);
-});
+// test('DoubleSortedArray: upsert - insert new values', () => {
+//   const arr = new DoubleSortedArray<number>(numCmp);
+//   assert.equal(arr.upsert(5), true);
+//   assert.equal(arr.upsert(3), true);
+//   assert.equal(arr.upsert(7), true);
+//   assert.deepEqual(arr.toArray(), [3, 5, 7]);
+// });
 
-test('Benchmark: random insertions', () => {
-  const size = 1000;
-  const random = Array.from({ length: size }, () => Math.floor(Math.random() * size * 10));
-  
-  const dsa = new DoubleSortedArray<number>(numCmp);
-  const dsaStart = performance.now();
-  random.forEach(n => dsa.insert(n));
-  const dsaTime = performance.now() - dsaStart;
-  
-  const sa = new SortedArray<number>(numCmp);
-  const saStart = performance.now();
-  random.forEach(n => sa.insert(n));
-  const saTime = performance.now() - saStart;
-  
-  console.log(`Random (${size}): DoubleSortedArray ${dsaTime.toFixed(2)}ms, SortedArray ${saTime.toFixed(2)}ms`);
-});
+// test('DoubleSortedArray: upsert - update existing values', () => {
+//   const arr = new DoubleSortedArray<number>(numCmp);
+//   arr.upsert(1);
+//   arr.upsert(2);
+//   arr.upsert(3);
+//   assert.equal(arr.upsert(2), false);
+//   assert.equal(arr.length, 3);
+//   assert.deepEqual(arr.toArray(), [1, 2, 3]);
+// });
 
-test('Benchmark: reverse insertions', () => {
-  const size = 1000;
-  
-  const dsa = new DoubleSortedArray<number>(numCmp);
-  const dsaStart = performance.now();
-  for (let i = size - 1; i >= 0; i--) dsa.insert(i);
-  const dsaTime = performance.now() - dsaStart;
-  
-  const sa = new SortedArray<number>(numCmp);
-  const saStart = performance.now();
-  for (let i = size - 1; i >= 0; i--) sa.insert(i);
-  const saTime = performance.now() - saStart;
-  
-  console.log(`Reverse (${size}): DoubleSortedArray ${dsaTime.toFixed(2)}ms, SortedArray ${saTime.toFixed(2)}ms`);
-});
+// test('DoubleSortedArray: upsert - mixed operations', () => {
+//   const arr = new DoubleSortedArray<number>(numCmp);
+//   assert.equal(arr.upsert(5), true);
+//   assert.equal(arr.upsert(5), false);
+//   assert.equal(arr.upsert(3), true);
+//   assert.equal(arr.upsert(7), true);
+//   assert.equal(arr.upsert(3), false);
+//   assert.deepEqual(arr.toArray(), [3, 5, 7]);
+// });
+
+// test('DoubleSortedArray: upsert - empty array', () => {
+//   const arr = new DoubleSortedArray<number>(numCmp);
+//   assert.equal(arr.upsert(10), true);
+//   assert.equal(arr.length, 1);
+//   assert.equal(arr.at(0), 10);
+// });

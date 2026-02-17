@@ -19,6 +19,8 @@ export declare class SortedArray<T> extends Array<T> {
     delete(value: T): T | undefined;
     upsert(value: T): boolean;
     private findIndexFor;
+    first(): T | undefined;
+    last(): T | undefined;
 }
 export declare class DoubleSortedArray<T> {
     private left;
@@ -26,9 +28,11 @@ export declare class DoubleSortedArray<T> {
     private compareFn;
     constructor(compareFn: CompareFn<T>);
     get length(): number;
-    insert(value: T): void;
-    private findInsertIndex;
+    insert(value: T): boolean;
     at(index: number): T | undefined;
     [Symbol.iterator](): Iterator<T>;
+    clear(): void;
+    delete(value: T): void;
+    deleteAt(index: number): T | undefined;
     toArray(): T[];
 }
