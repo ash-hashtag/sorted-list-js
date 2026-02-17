@@ -125,3 +125,72 @@ function binarySearchResult<T>(
 
   return { ok: false, error: lo }; // not found → insert position
 }
+
+
+
+export class DoubleSortedArray<T> {
+  private left: T[] = [];
+  private right: T[] = [];
+  private compareFn: CompareFn<T>;
+
+  constructor(compareFn: CompareFn<T>) {
+    this.compareFn = compareFn;
+  }
+
+  get length(): number {
+    return this.left.length + this.right.length;
+  }
+
+  insert(value: T): void {
+    if (this.length === 0) {
+      this.right.push(value);
+      return;
+    }
+
+    const leftLast = this.left[this.left.length - 1];
+    const rightFirst = this.right[0];
+
+    if (this.left.length === 0 || this.compareFn(value, rightFirst) >= 0) {
+      const idx = this.findInsertIndex(this.right, value);
+      this.right.splice(idx, 0, value);
+    } else if (this.right.length === 0 || this.compareFn(value, leftLast) <= 0) {
+      const idx = this.findInsertIndex(this.left, value);
+      this.left.splice(idx, 0, value);
+    } else {
+      const distToLeft = this.left.length - this.findInsertIndex(this.left, value);
+      const distToRight = this.findInsertIndex(this.right, value);
+      
+      if (distToLeft <= distToRight) {
+        const idx = this.findInsertIndex(this.left, value);
+        this.left.splice(idx, 0, value);
+      } else {
+        const idx = this.findInsertIndex(this.right, value);
+        this.right.splice(idx, 0, value);
+      }
+    }
+  }
+
+  private findInsertIndex(arr: T[], value: T): number {
+    let lo = 0, hi = arr.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (this.compareFn(arr[mid], value) < 0) lo = mid + 1;
+      else hi = mid;
+    }
+    return lo;
+  }
+
+  at(index: number): T | undefined {
+    if (index < 0 || index >= this.length) return undefined;
+    return index < this.left.length ? this.left[index] : this.right[index - this.left.length];
+  }
+
+  *[Symbol.iterator](): Iterator<T> {
+    yield* this.left;
+    yield* this.right;
+  }
+
+  toArray(): T[] {
+    return [...this.left, ...this.right];
+  }
+}

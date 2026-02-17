@@ -1,43 +1,57 @@
 # sorted-array
 
-A TypeScript implementation of a sorted array with efficient insertion and search using binary search for larger arrays.
+A TypeScript implementation of sorted arrays with efficient insertion and search using binary search.
 
+## Implementations
+
+### SortedArray
+Single array implementation, best for general use and random insertions.
+
+### DoubleSortedArray
+Dual array implementation optimized for sequential/reverse insertions and when insertions cluster at ends.
 
 ## Features
 
 - Automatic sorting on insertion
-- Efficient binary search for arrays with 8+ elements
+- Efficient binary search
 - TypeScript support with full type definitions
 - Custom comparator functions
 - Upsert operations (insert or update)
-- Extends native Array class
+- SortedArray extends native Array class
 
 ## Usage
+
+### SortedArray
 
 ```typescript
 import { SortedArray } from 'sorted-array';
 
-// Create with a comparator function
 const arr = new SortedArray<number>((a, b) => a - b);
-
-// Insert elements (automatically sorted)
 arr.push(3, 1, 4, 1, 5);
 console.log([...arr]); // [1, 1, 3, 4, 5]
 
-// Create from existing array
 const arr2 = SortedArray.fromArray([3, 1, 2], (a, b) => a - b);
 console.log([...arr2]); // [1, 2, 3]
 ```
 
+### DoubleSortedArray
+
+```typescript
+import { DoubleSortedArray } from 'sorted-array';
+
+const arr = new DoubleSortedArray<number>((a, b) => a - b);
+for (let i = 0; i < 100; i++) arr.insert(i);
+console.log(arr.at(0)); // 0
+console.log([...arr]); // [0, 1, 2, ..., 99]
+```
+
 ## API
 
-### Constructor
+### SortedArray
 
 ```typescript
 new SortedArray<T>(compareFn: (a: T, b: T) => number)
 ```
-
-### Methods
 
 - `push(...elements: T[])` - Insert elements maintaining sort order
 - `insert(value: T)` - Insert a single element
@@ -47,6 +61,18 @@ new SortedArray<T>(compareFn: (a: T, b: T) => number)
 - `pop()` - Remove and return last element
 - `clear()` - Remove all elements
 - `fromArray(arr: T[], compareFn)` - Static method to create from array
+
+### DoubleSortedArray
+
+```typescript
+new DoubleSortedArray<T>(compareFn: (a: T, b: T) => number)
+```
+
+- `insert(value: T)` - Insert element
+- `at(index: number)` - Access element by index
+- `toArray()` - Convert to regular array
+- `length` - Get total element count
+- Iterable via `[Symbol.iterator]()`
 
 ## Use Cases
 
@@ -150,10 +176,29 @@ console.log([...names]); // ['Alice', 'Bob', 'Charlie']
 
 ## Performance
 
+### SortedArray
 - Insert: O(n) worst case, optimized for appending to end
 - Search: O(log n) for arrays with 8+ elements, O(n) for smaller arrays
 - Delete: O(n) due to array shifting
 - Access: O(1) for indexed access
+
+### DoubleSortedArray
+- Insert: O(n) worst case, but significantly faster for sequential/reverse patterns
+- Search: O(log n) via binary search
+- Access: O(1) via at() method
+
+## When to Use DoubleSortedArray
+
+Use DoubleSortedArray when:
+- Insertions are mostly sequential (ascending order)
+- Insertions are mostly reverse (descending order)
+- Insertions cluster at the beginning or end of the range
+- You're building a sorted list from streaming data
+
+Use SortedArray when:
+- Insertions are uniformly random
+- You need full Array API compatibility
+- You need delete/upsert operations
 
 ## License
 

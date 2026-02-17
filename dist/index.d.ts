@@ -20,3 +20,15 @@ export declare class SortedArray<T> extends Array<T> {
     upsert(value: T): boolean;
     private findIndexFor;
 }
+export declare class DoubleSortedArray<T> {
+    private left;
+    private right;
+    private compareFn;
+    constructor(compareFn: CompareFn<T>);
+    get length(): number;
+    insert(value: T): void;
+    private findInsertIndex;
+    at(index: number): T | undefined;
+    [Symbol.iterator](): Iterator<T>;
+    toArray(): T[];
+}

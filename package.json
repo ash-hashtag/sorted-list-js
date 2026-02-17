@@ -1,6 +1,6 @@
 {
   "name": "sorted-array",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A TypeScript implementation of a sorted array with efficient insertion and search",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "node test.js",
+    "test": "node test.ts",
     "prepublishOnly": "npm run build"
   },
   "keywords": ["sorted", "array", "data-structure", "typescript"],
