@@ -110,37 +110,37 @@ test('DoubleSortedArray: length', () => {
   assert.equal(arr.length, 3);
 });
 
-// test('DoubleSortedArray: upsert - insert new values', () => {
-//   const arr = new DoubleSortedArray<number>(numCmp);
-//   assert.equal(arr.upsert(5), true);
-//   assert.equal(arr.upsert(3), true);
-//   assert.equal(arr.upsert(7), true);
-//   assert.deepEqual(arr.toArray(), [3, 5, 7]);
-// });
+test('DoubleSortedArray: upsert - insert new values', () => {
+  const arr = new DoubleSortedArray<number>(numCmp);
+  assert.equal(arr.upsert(5), true);
+  assert.equal(arr.upsert(3), true);
+  assert.equal(arr.upsert(7), true);
+  assert.deepEqual(arr.toArray(), [3, 5, 7]);
+});
 
-// test('DoubleSortedArray: upsert - update existing values', () => {
-//   const arr = new DoubleSortedArray<number>(numCmp);
-//   arr.upsert(1);
-//   arr.upsert(2);
-//   arr.upsert(3);
-//   assert.equal(arr.upsert(2), false);
-//   assert.equal(arr.length, 3);
-//   assert.deepEqual(arr.toArray(), [1, 2, 3]);
-// });
+test('DoubleSortedArray: upsert - update existing values', () => {
+  const arr = new DoubleSortedArray<number>(numCmp);
+  arr.upsert(1);
+  arr.upsert(2);
+  arr.upsert(3);
+  assert.equal(arr.upsert(2), false);
+  assert.equal(arr.length, 3);
+  assert.deepEqual(arr.toArray(), [1, 2, 3]);
+});
 
-// test('DoubleSortedArray: upsert - mixed operations', () => {
-//   const arr = new DoubleSortedArray<number>(numCmp);
-//   assert.equal(arr.upsert(5), true);
-//   assert.equal(arr.upsert(5), false);
-//   assert.equal(arr.upsert(3), true);
-//   assert.equal(arr.upsert(7), true);
-//   assert.equal(arr.upsert(3), false);
-//   assert.deepEqual(arr.toArray(), [3, 5, 7]);
-// });
+test('DoubleSortedArray: upsert - mixed operations', () => {
+  const arr = new DoubleSortedArray<number>(numCmp);
+  assert.equal(arr.upsert(5), true);
+  assert.equal(arr.upsert(5), false);
+  assert.equal(arr.upsert(3), true);
+  assert.equal(arr.upsert(7), true);
+  assert.equal(arr.upsert(3), false);
+  assert.deepEqual(arr.toArray(), [3, 5, 7]);
+});
 
-// test('DoubleSortedArray: upsert - empty array', () => {
-//   const arr = new DoubleSortedArray<number>(numCmp);
-//   assert.equal(arr.upsert(10), true);
-//   assert.equal(arr.length, 1);
-//   assert.equal(arr.at(0), 10);
-// });
+test('DoubleSortedArray: upsert - empty array', () => {
+  const arr = new DoubleSortedArray<number>(numCmp);
+  assert.equal(arr.upsert(10), true);
+  assert.equal(arr.length, 1);
+  assert.equal(arr.at(0), 10);
+});

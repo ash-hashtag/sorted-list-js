@@ -68,7 +68,7 @@ export class SortedArray<T> extends Array<T> {
     }
   }
 
-  private findIndexFor(value: T): Result<number, number> {
+  findIndexFor(value: T): Result<number, number> {
     if (this.length == 0) {
       return { ok: false, error: 0 };
     }
@@ -158,35 +158,6 @@ export class DoubleSortedArray<T> {
     return this.left.length + this.right.length;
   }
 
-  // upsert(value: T): boolean {
-  //   if (this.length === 0) {
-  //     return this.right.upsert(value);
-  //   }
-
-  //   if (this.left.length == 0) {
-  //     const rightFirst = this.right.first()!;
-  //     if (this.compareFn(value, rightFirst) <= 0) {
-  //       return this.left.upsert(value);
-  //     } else {
-  //       return this.right.upsert(value);
-  //     }
-      
-  //   }
-
-  //   const leftLast = this.left.last()!; // least element
-
-  //   if (this.compareFn(value, leftLast) <= 0) {
-  //     return this.left.upsert(value);
-  //   }
-
-  //   const leftFirst = this.left.first()!;
-
-  //   if (this.compareFn(value, leftFirst) <= 0) {
-  //     return this.left.upsert(value);
-  //   } else {
-  //     return this.right.upsert(value);
-  //   }
-  // }
 
 
   insert(value: T): boolean {
@@ -220,10 +191,46 @@ export class DoubleSortedArray<T> {
   }
   
 
+  upsert(value: T) {
+    const index = this.findIndex(value)
+    if (index === undefined) {
+      this.insert(value)
+      return true
+    }
+
+    this.setAt(index, value)
+    return false
+  }
+
+  findIndex(value: T): number | undefined {
+    let result = this.left.findIndexFor(value)
+  
+    if (result.ok) {
+      return result.value
+    }
+
+    result = this.right.findIndexFor(value)
+
+    if (result.ok) {
+      return result.value + this.left.length
+    }
+  
+  }
+
 
   at(index: number): T | undefined {
     if (index < 0 || index >= this.length) return undefined;
     return index < this.left.length ? this.left[this.left.length - 1 - index] : this.right[index - this.left.length];
+  }
+
+
+  private setAt(index: number, value: T) {
+    if (index < 0 || index >= this.length) return undefined;
+    if (index < this.left.length) {
+      this.left[this.left.length - 1 - index] = value;
+    } else {
+      this.right[index - this.left.length] = value;
+    }
   }
 
   *[Symbol.iterator](): Iterator<T> {
